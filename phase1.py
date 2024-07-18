@@ -10,6 +10,39 @@ class ExpressionTree:
     def __init__(self):
         self.root = None
 
+    def evaluate(self, x):
+        return self._evaluate_node(self.root, x)
+
+    def _evaluate_node(self, node, x):
+        if node is None:
+            return 0
+
+        if node.value == 'x':
+            return x
+        elif node.value.replace('.', '').isdigit():
+            return float(node.value)
+        elif node.value in ['+', '-', '*', '/']:
+            left = self._evaluate_node(node.left, x)
+            right = self._evaluate_node(node.right, x)
+            if node.value == '+':
+                return left + right
+            elif node.value == '-':
+                return left - right
+            elif node.value == '*':
+                return left * right
+            elif node.value == '/':
+                return left / right
+        elif node.value in ['sin', 'cos', 'tan', 'tanh']:
+            arg = self._evaluate_node(node.left, x)
+            if node.value == 'sin':
+                return math.sin(arg)
+            elif node.value == 'cos':
+                return math.cos(arg)
+            elif node.value == 'tan':
+                return math.tan(arg)
+            elif node.value == 'tanh':
+                return math.tanh(arg)
+
     def create_expression_tree(self, expression):
         tokens = expression.split()
         self.root = self._create_tree(tokens)
@@ -68,4 +101,5 @@ if __name__ == "__main__":
     for expr in expressions:
         tree = ExpressionTree()
         tree.create_expression_tree(expr)
-        print(f'tree {tree} with expression {expr} created successfully.')
+        result = tree.evaluate(x)
+        print(f"Result for '{expr}' with x = {x}: {result}")
